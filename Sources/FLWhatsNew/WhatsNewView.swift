@@ -7,28 +7,39 @@
 
 import SwiftUI
 
-struct WhatsNewView: View {
-
-	@EnvironmentObject var state: AppState
+public struct WhatsNewView<Icon: View>: View {
 
 	var version: WhatsNew
+	@ViewBuilder var icon: () -> Icon
+	var onClose: (() -> Void)?
 
-	var body: some View {
+	private let config = WhatsNewStore.Config.shared
+
+	public init(version: WhatsNew, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)?) {
+		self.version = version
+		self.icon = icon
+		self.onClose = onClose
+	}
+
+	public var body: some View {
 		VStack(alignment: .center) {
 			VStack(alignment: .center) {
-				Image("pen")
-					.resizable()
-					.scaledToFit()
+				icon()
+				#if os(macOS)
 					.frame(width: 50, height: 50)
-					.foregroundStyle(Color("white"))
-					.padding(24)
-					.background(Color("black").gradient, in: .rect(cornerRadius: 28))
-					.padding(.bottom)
+				#else
+					.frame(width: 80, height: 80)
+				#endif
+					.padding(.vertical)
 
 				Text("What's new")
 					.foregroundColor(.primary)
 			}
+#if os(macOS)
+			.font(.system(size: 30, weight: .bold))
+			#else
 			.font(.system(size: 36, weight: .bold))
+			#endif
 
 			ScrollView(showsIndicators: false) {
 				VStack(alignment: .leading) {
@@ -41,21 +52,25 @@ struct WhatsNewView: View {
 									.scaledToFit()
 									.font(.largeTitle)
 									.frame(width: 40, height: 40)
-									.foregroundColor(.accentColor)
+									.foregroundColor(config.brandColor)
 
 							case .system(let name):
 								Image(systemName: name)
 									.font(.largeTitle)
 									.frame(width: 50, height: 40)
-									.foregroundColor(.accentColor)
+									.foregroundColor(config.brandColor)
 							}
 
 							VStack(alignment: .leading) {
 								Text(feature.title)
 									.font(.system(size: 17).bold())
+									.fixedSize(horizontal: false, vertical: true)
+									.frame(maxWidth: .infinity, alignment: .leading)
 
 								Text(feature.body)
 									.font(.system(size: 16))
+									.fixedSize(horizontal: false, vertical: true)
+									.frame(maxWidth: .infinity, alignment: .leading)
 							}
 						}
 					}
@@ -64,9 +79,9 @@ struct WhatsNewView: View {
 			}
 			.padding(.horizontal)
 
-			RectangularButton(title: "Continue") {
+			RectangularButton(title: config.actionTitle, color: config.brandColor) {
 				withAnimation {
-					state.newVersion = nil
+					onClose?()
 				}
 			}
 			#if os(macOS) || os(visionOS)
@@ -74,5 +89,8 @@ struct WhatsNewView: View {
 			#endif
 		}
 		.padding()
+#if os(macOS)
+		.frame(width: 400, height: 500)
+#endif
 	}
 }
