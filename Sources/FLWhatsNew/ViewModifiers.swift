@@ -12,13 +12,14 @@ struct ShowModifier<Icon: View>: ViewModifier {
 	@State private var newVersion: WhatsNew?
 
 	var store: WhatsNewStore
+	var showSheet: Bool = true
 	@ViewBuilder var icon: () -> Icon
 	var onClose: (() -> Void)?
 
 	func body(content: Content) -> some View {
 		content
 			.onAppear {
-				if let version = store.appropriatePageToPresent() {
+				if showSheet, let version = store.appropriatePageToPresent() {
 					newVersion = version
 				}
 			}
@@ -34,8 +35,8 @@ struct ShowModifier<Icon: View>: ViewModifier {
 public extension View {
 
 	@ViewBuilder
-	func showWhatsNew<Icon: View>(store: WhatsNewStore, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) -> some View {
-		modifier(ShowModifier(store: store, icon: icon, onClose: onClose))
+	func showWhatsNew<Icon: View>(store: WhatsNewStore, showSheet: Bool = true, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) -> some View {
+		modifier(ShowModifier(store: store, showSheet: showSheet, icon: icon, onClose: onClose))
 	}
 
 #if os(iOS)
