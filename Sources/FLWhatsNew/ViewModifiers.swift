@@ -21,6 +21,14 @@ struct ShowModifier<Icon: View>: ViewModifier {
 			.onAppear {
 				if showSheet, let version = store.appropriatePageToPresent() {
 					newVersion = version
+
+#if canImport(UIKit)
+					let delay = UIDevice.current.userInterfaceIdiom == .phone ? 0.5 : 1.5
+
+					DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+						hideKeyboard()
+					}
+#endif
 				}
 			}
 			.present(item: $newVersion) { version in
@@ -63,3 +71,10 @@ public extension View {
 		#endif
 	}
 }
+
+#if canImport(UIKit)
+@MainActor
+func hideKeyboard() {
+	UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+}
+#endif

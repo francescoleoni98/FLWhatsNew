@@ -79,7 +79,7 @@ public struct WhatsNewView<Icon: View>: View {
 			}
 			.padding(.horizontal)
 
-			RectangularButton(title: config.actionTitle, color: config.brandColor) {
+			RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
 				withAnimation {
 					onClose?()
 				}

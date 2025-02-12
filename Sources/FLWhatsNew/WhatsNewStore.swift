@@ -44,10 +44,12 @@ public extension WhatsNewStore {
 		@MainActor internal static var shared: Config = Config()
 
 		public var brandColor: Color
+		public var foregroundColor: Color
 		public var actionTitle: LocalizedStringKey
 
-		public init(brandColor: Color = .blue, actionTitle: LocalizedStringKey = "Continue") {
+		public init(brandColor: Color = .blue, foregroundColor: Color = .white, actionTitle: LocalizedStringKey = "Continue") {
 			self.brandColor = brandColor
+			self.foregroundColor = foregroundColor
 			self.actionTitle = actionTitle
 		}
 	}

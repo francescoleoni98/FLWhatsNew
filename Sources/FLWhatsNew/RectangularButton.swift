@@ -12,6 +12,7 @@ struct RectangularButton: View {
 
 	var title: LocalizedStringKey
 	var color: Color = .blue
+	var foreground: Color = .white
 	var action: () -> Void
 
 	var body: some View {
@@ -21,7 +22,7 @@ struct RectangularButton: View {
 			Text(title)
 				.bold()
 				.multilineTextAlignment(.center)
-				.foregroundColor(.white)
+				.foregroundColor(foreground)
 				.frame(maxWidth: .infinity)
 				.frame(height: 50)
 				.background(color)
