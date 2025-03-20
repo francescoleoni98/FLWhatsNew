@@ -6,17 +6,45 @@
 //
 
 import SwiftUI
+import Combine
+
+class KeyboardObserver: ObservableObject {
+
+	@Published var keyboardShown: Bool = false
+
+	private var cancellables = Set<AnyCancellable>()
+
+	init() {
+		#if !os(macOS)
+		NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+			.sink { [weak self] _ in
+				self?.keyboardShown = true
+			}
+			.store(in: &cancellables)
+
+		NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+			.sink { [weak self] _ in
+				self?.keyboardShown = false
+			}
+			.store(in: &cancellables)
+		#endif
+	}
+}
 
 public struct WhatsNewView<Icon: View>: View {
 
+	@ObservedObject var keyboard = KeyboardObserver()
+
 	var version: WhatsNew
+	var appReviewURL: String?
 	@ViewBuilder var icon: () -> Icon
 	var onClose: (() -> Void)?
 
 	private let config = WhatsNewStore.Config.shared
 
-	public init(version: WhatsNew, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)?) {
+	public init(version: WhatsNew, appReviewURL: String? = nil, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)?) {
 		self.version = version
+		self.appReviewURL = appReviewURL
 		self.icon = icon
 		self.onClose = onClose
 	}
@@ -79,18 +107,51 @@ public struct WhatsNewView<Icon: View>: View {
 			}
 			.padding(.horizontal)
 
-			RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
-				withAnimation {
-					onClose?()
+			if let appReviewURL, let url = URL(string: appReviewURL) {
+				RectangularButton(title: "Rate App", color: config.brandColor, foreground: config.foregroundColor) {
+					#if os(macOS)
+					NSWorkspace.shared.open(url)
+					#else
+					UIApplication.shared.open(url)
+					#endif
+
+					withAnimation {
+						onClose?()
+					}
+				}
+
+				Button {
+					withAnimation {
+						onClose?()
+					}
+				} label: {
+					Text("Maybe later")
+						.bold()
+						.foregroundColor(config.brandColor)
+						.frame(height: 44)
+				}
+#if os(macOS) || os(visionOS)
+				.buttonStyle(.plain)
+#endif
+			} else {
+				RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
+					withAnimation {
+						onClose?()
+					}
 				}
 			}
-			#if os(macOS) || os(visionOS)
-			.buttonStyle(.plain)
-			#endif
 		}
 		.padding()
 #if os(macOS)
 		.frame(width: 400, height: 500)
+#else
+		.onChange(of: keyboard.keyboardShown) { shown in
+			if shown {
+				let scenes = UIApplication.shared.connectedScenes
+				let windowScene = scenes.first as? UIWindowScene
+				windowScene?.windows.first?.endEditing(true)
+			}
+		}
 #endif
 	}
 }

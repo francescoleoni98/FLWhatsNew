@@ -13,6 +13,7 @@ struct ShowModifier<Icon: View>: ViewModifier {
 
 	var store: WhatsNewStore
 	var showSheet: Bool = true
+	var appReviewURL: String? = nil
 	@ViewBuilder var icon: () -> Icon
 	var onClose: (() -> Void)?
 
@@ -32,7 +33,7 @@ struct ShowModifier<Icon: View>: ViewModifier {
 				}
 			}
 			.present(item: $newVersion) { version in
-				WhatsNewView(version: version, icon: icon, onClose: {
+				WhatsNewView(version: version, appReviewURL: appReviewURL, icon: icon, onClose: {
 					newVersion = nil
 					onClose?()
 				})
@@ -43,8 +44,8 @@ struct ShowModifier<Icon: View>: ViewModifier {
 public extension View {
 
 	@ViewBuilder
-	func showWhatsNew<Icon: View>(store: WhatsNewStore, showSheet: Bool = true, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) -> some View {
-		modifier(ShowModifier(store: store, showSheet: showSheet, icon: icon, onClose: onClose))
+	func showWhatsNew<Icon: View>(store: WhatsNewStore, showSheet: Bool = true, appReviewURL: String? = nil, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) -> some View {
+		modifier(ShowModifier(store: store, showSheet: showSheet, appReviewURL: appReviewURL, icon: icon, onClose: onClose))
 	}
 
 #if os(iOS)

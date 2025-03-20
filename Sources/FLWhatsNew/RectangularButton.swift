@@ -29,5 +29,8 @@ struct RectangularButton: View {
 				.hoverEffectIfPresent()
 				.clipShape(.rect(cornerRadius: 16, style: .continuous))
 		}
+#if os(macOS) || os(visionOS)
+				.buttonStyle(.plain)
+#endif
 	}
 }
