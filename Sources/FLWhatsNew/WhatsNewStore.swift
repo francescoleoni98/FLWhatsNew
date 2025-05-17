@@ -10,7 +10,7 @@ import SwiftUI
 public class WhatsNewStore {
 
 	@MainActor
-	static var isTesting: Bool = false
+	static public var isTesting: Bool = false
 
 	var collection: [WhatsNew]
 
