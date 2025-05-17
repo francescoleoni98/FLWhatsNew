@@ -39,15 +39,17 @@ public class WhatsNewStore {
 
 public extension WhatsNewStore {
 
-	public struct Config {
+	struct Config {
 
-		@MainActor internal static var shared: Config = Config()
+		@MainActor internal static var shared: Config = Config(appName: "Brain Dump", brandColor: .black, foregroundColor: .white, actionTitle: "Test")
 
+		public var appName: String?
 		public var brandColor: Color
 		public var foregroundColor: Color
 		public var actionTitle: LocalizedStringKey
 
-		public init(brandColor: Color = .blue, foregroundColor: Color = .white, actionTitle: LocalizedStringKey = "Continue") {
+		public init(appName: String? = nil, brandColor: Color = .blue, foregroundColor: Color = .white, actionTitle: LocalizedStringKey = "Continue") {
+			self.appName = appName
 			self.brandColor = brandColor
 			self.foregroundColor = foregroundColor
 			self.actionTitle = actionTitle

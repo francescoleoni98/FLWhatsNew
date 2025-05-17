@@ -9,12 +9,12 @@ import SwiftUI
 
 /// A button that takes the entire width space available.
 struct RectangularButton: View {
-
+	
 	var title: LocalizedStringKey
 	var color: Color = .blue
 	var foreground: Color = .white
 	var action: () -> Void
-
+	
 	var body: some View {
 		Button {
 			action()
@@ -24,13 +24,15 @@ struct RectangularButton: View {
 				.multilineTextAlignment(.center)
 				.foregroundColor(foreground)
 				.frame(maxWidth: .infinity)
+#if os(macOS)
+				.frame(height: 44)
+#else
 				.frame(height: 50)
+#endif
 				.background(color)
 				.hoverEffectIfPresent()
 				.clipShape(.rect(cornerRadius: 16, style: .continuous))
 		}
-#if os(macOS) || os(visionOS)
-				.buttonStyle(.plain)
-#endif
+		.buttonStyle(.plain)
 	}
 }

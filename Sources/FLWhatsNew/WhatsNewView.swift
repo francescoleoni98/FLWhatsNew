@@ -15,7 +15,7 @@ class KeyboardObserver: ObservableObject {
 	private var cancellables = Set<AnyCancellable>()
 
 	init() {
-		#if !os(macOS)
+#if os(iOS)
 		NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
 			.sink { [weak self] _ in
 				self?.keyboardShown = true
@@ -27,7 +27,7 @@ class KeyboardObserver: ObservableObject {
 				self?.keyboardShown = false
 			}
 			.store(in: &cancellables)
-		#endif
+#endif
 	}
 }
 
@@ -53,67 +53,63 @@ public struct WhatsNewView<Icon: View>: View {
 		VStack(alignment: .center) {
 			VStack(alignment: .center) {
 				icon()
-				#if os(macOS)
-					.frame(width: 50, height: 50)
-				#else
 					.frame(width: 80, height: 80)
-				#endif
-					.padding(.vertical)
+					.padding(.bottom, 8)
 
-				Text("What's new")
-					.foregroundColor(.primary)
+				Group {
+					if let appName = config.appName {
+						Text("What's new in\n\(appName)")
+					} else {
+						Text("What's new")
+					}
+				}
+				.foregroundColor(.primary)
+				.multilineTextAlignment(.center)
+				.font(.title.bold())
 			}
-#if os(macOS)
-			.font(.system(size: 30, weight: .bold))
-			#else
-			.font(.system(size: 36, weight: .bold))
-			#endif
 
-			ScrollView(showsIndicators: false) {
-				VStack(alignment: .leading) {
+			FadingScrollView {
+				VStack(alignment: .leading, spacing: 20) {
 					ForEach(version.features) { feature in
-						HStack(spacing: 20) {
+						HStack(spacing: 16) {
 							switch feature.image {
 							case .named(let name):
 								Image(name)
 									.resizable()
 									.scaledToFit()
-									.font(.largeTitle)
 									.frame(width: 40, height: 40)
 									.foregroundColor(config.brandColor)
 
 							case .system(let name):
 								Image(systemName: name)
 									.font(.largeTitle)
-									.frame(width: 50, height: 40)
+									.frame(width: 40, height: 40)
 									.foregroundColor(config.brandColor)
 							}
 
 							VStack(alignment: .leading) {
 								Text(feature.title)
-									.font(.system(size: 17).bold())
+									.font(.title3.bold())
 									.fixedSize(horizontal: false, vertical: true)
 									.frame(maxWidth: .infinity, alignment: .leading)
 
 								Text(feature.body)
-									.font(.system(size: 16))
+									.font(.body)
 									.fixedSize(horizontal: false, vertical: true)
 									.frame(maxWidth: .infinity, alignment: .leading)
 							}
 						}
 					}
-					.padding(.vertical, 7)
 				}
 			}
-			.padding(.horizontal)
 
 			if let appReviewURL, let url = URL(string: appReviewURL) {
 				RectangularButton(title: "Rate App", color: config.brandColor, foreground: config.foregroundColor) {
-					#if os(macOS)
+#if os(macOS)
 					NSWorkspace.shared.open(url)
-					#else
+#else
 					UIApplication.shared.open(url)
-					#endif
+#endif
 
 					withAnimation {
 						onClose?()
@@ -143,8 +139,9 @@ public struct WhatsNewView<Icon: View>: View {
 		}
 		.padding()
 #if os(macOS)
-		.frame(width: 400, height: 500)
+		.frame(width: 400, height: 550)
 #else
+		.frame(maxWidth: 500)
 		.onChange(of: keyboard.keyboardShown) { shown in
 			if shown {
 				let scenes = UIApplication.shared.connectedScenes
@@ -153,5 +150,57 @@ public struct WhatsNewView<Icon: View>: View {
 			}
 		}
 #endif
+	}
+}
+
+struct FadingScrollView<Content: View>: View {
+
+	var content: Content
+	var fadeHeight: CGFloat
+	var showsIndicators: Bool
+
+	init(@ViewBuilder content: () -> Content, fadeHeight: CGFloat = 20, showsIndicators: Bool = false) {
+		self.content = content()
+		self.fadeHeight = fadeHeight
+		self.showsIndicators = showsIndicators
+	}
+
+	var body: some View {
+		ScrollView(showsIndicators: showsIndicators) {
+			content
+				.padding(.vertical, fadeHeight)
+		}
+		.mask(
+			VStack(spacing: 0) {
+				LinearGradient(
+					gradient: Gradient(colors: [.black.opacity(0), .black]),
+					startPoint: .top,
+					endPoint: .bottom
+				)
+				.frame(height: fadeHeight)
+
+				Rectangle()
+					.fill(.black)
+
+				LinearGradient(
+					gradient: Gradient(colors: [.black, .black.opacity(0)]),
+					startPoint: .top,
+					endPoint: .bottom
+				)
+				.frame(height: fadeHeight)
+			}
+		)
+	}
+}
+
+#Preview {
+	WhatsNewView(version: .init(version: "1.0.0", features: [Feature(id: "1", title: "This is the title This is the body This is the body This is the body ", body: "This is the body This is the body This is the body This is the body.", image: .system("plus")), Feature(id: "3", title: "This is the title", body: "This is the body.", image: .system("plus")), Feature(id: "2", title: "This is the title", body: "This is the body.", image: .system("plus")), Feature(id: "4", title: "This is the title", body: "This is the body.", image: .system("plus"))]), appReviewURL: "nil") {
+		Image(systemName: "plus")
+			.foregroundColor(.white)
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
+			.background(Color.black)
+			.clipShape(.rect(cornerRadius: 20))
+	} onClose: {
+
 	}
 }
