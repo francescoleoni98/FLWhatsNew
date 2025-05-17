@@ -77,19 +77,19 @@ public struct WhatsNewView<Icon: View>: View {
 								Image(name)
 									.resizable()
 									.scaledToFit()
-									.frame(width: 40, height: 40)
+									.frame(width: 35, height: 35)
 									.foregroundColor(config.brandColor)
 
 							case .system(let name):
 								Image(systemName: name)
-									.font(.largeTitle)
-									.frame(width: 40, height: 40)
+									.font(.title)
+									.frame(width: 35, height: 35)
 									.foregroundColor(config.brandColor)
 							}
 
 							VStack(alignment: .leading) {
 								Text(feature.title)
-									.font(.title3.bold())
+									.font(.body.bold())
 									.fixedSize(horizontal: false, vertical: true)
 									.frame(maxWidth: .infinity, alignment: .leading)
 
@@ -102,6 +102,7 @@ public struct WhatsNewView<Icon: View>: View {
 					}
 				}
 			}
+			.padding(.horizontal)
 
 			if let appReviewURL, let url = URL(string: appReviewURL) {
 				RectangularButton(title: "Rate App", color: config.brandColor, foreground: config.foregroundColor) {
