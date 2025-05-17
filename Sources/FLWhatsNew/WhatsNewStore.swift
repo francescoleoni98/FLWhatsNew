@@ -9,6 +9,9 @@ import SwiftUI
 
 public class WhatsNewStore {
 
+	@MainActor
+	static var isTesting: Bool = false
+
 	var collection: [WhatsNew]
 
 	public init(collection: [WhatsNew]) {
@@ -25,7 +28,12 @@ public class WhatsNewStore {
 		return collection.first(where: { $0.version == Version(version) })
 	}
 
+	@MainActor
 	public func appropriatePageToPresent() -> WhatsNew? {
+		guard !WhatsNewStore.isTesting else {
+			return pageForCurrentVersion()
+		}
+
 		guard let pageToPresent = pageForCurrentVersion(),
 					!UserDefaults.standard.bool(forKey: pageToPresent.version.description) else {
 			return nil
