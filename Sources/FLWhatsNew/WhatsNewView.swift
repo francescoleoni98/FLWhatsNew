@@ -42,7 +42,7 @@ public struct WhatsNewView<Icon: View>: View {
 
 	private let config = WhatsNewStore.Config.shared
 
-	public init(version: WhatsNew, appReviewURL: String? = nil, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)?) {
+	public init(version: WhatsNew, appReviewURL: String? = nil, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) {
 		self.version = version
 		self.appReviewURL = appReviewURL
 		self.icon = icon
@@ -53,7 +53,11 @@ public struct WhatsNewView<Icon: View>: View {
 		VStack(alignment: .center) {
 			VStack(alignment: .center) {
 				icon()
+				#if os(macOS)
+					.frame(width: 70, height: 70)
+				#else
 					.frame(width: 80, height: 80)
+				#endif
 					.padding(.bottom, 8)
 
 				Group {
@@ -67,6 +71,7 @@ public struct WhatsNewView<Icon: View>: View {
 				.multilineTextAlignment(.center)
 				.font(.title.bold())
 			}
+			.padding(.top)
 
 			FadingScrollView {
 				VStack(alignment: .leading, spacing: 20) {
