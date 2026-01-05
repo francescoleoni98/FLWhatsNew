@@ -49,18 +49,18 @@ public extension WhatsNewStore {
 
 	struct Config {
 
-		@MainActor internal static var shared: Config = Config(appName: "Brain Dump", brandColor: .black, foregroundColor: .white, actionTitle: "Test")
+		@MainActor internal static var shared: Config = Config(appName: "Brain Dump", brandColor: .black, foregroundColor: .white)
 
 		public var appName: String?
 		public var brandColor: Color
 		public var foregroundColor: Color
-		public var actionTitle: LocalizedStringKey
+		public var actionTitle: String
 
-		public init(appName: String? = nil, brandColor: Color = .blue, foregroundColor: Color = .white, actionTitle: LocalizedStringKey = "Continue") {
+    public init(appName: String? = nil, brandColor: Color = .blue, foregroundColor: Color = .white, actionTitle: String? = nil) {
 			self.appName = appName
 			self.brandColor = brandColor
 			self.foregroundColor = foregroundColor
-			self.actionTitle = actionTitle
+			self.actionTitle = actionTitle ?? String(localized: "continue", bundle: .module)
 		}
 	}
 }

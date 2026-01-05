@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  FLWhatsNew
+
+  Created by Francesco Leoni on 05/01/26.
+  
+*/
+
+"whatsNew" = "What's New";
+"whatsNewIn" = "What's New in\n%@";
+"rateApp" = "Rate App";
+"maybeLater" = "Maybe Later";
+"continue" = "Continue";

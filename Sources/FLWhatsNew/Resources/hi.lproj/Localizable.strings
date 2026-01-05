@@ -1,0 +1,13 @@
+/*
+	Localizable.strings
+	BrainDump
+
+	Created by Francesco Leoni on 14/08/25.
+
+*/
+
+"rateApp" = "ऐप को रेटिंग दें";
+"whatsNewIn" = "%@ में नया क्या है";
+"whatsNew" = "नया क्या है";
+"continue" = "जारी रखें";
+"maybeLater" = "शायद बाद में";

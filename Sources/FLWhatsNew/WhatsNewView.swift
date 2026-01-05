@@ -62,9 +62,12 @@ public struct WhatsNewView<Icon: View>: View {
 
 				Group {
 					if let appName = config.appName {
-						Text("What's new in\n\(appName)")
+            Text(String(
+              format: NSLocalizedString("whatsNewIn", bundle: .module, comment: ""),
+              appName
+          ))
 					} else {
-						Text("What's new")
+            Text("whatsNew", bundle: .module)
 					}
 				}
 				.foregroundColor(.primary)
@@ -110,7 +113,7 @@ public struct WhatsNewView<Icon: View>: View {
 			.padding(.horizontal)
 
 			if let appReviewURL, let url = URL(string: appReviewURL) {
-				RectangularButton(title: "Rate App", color: config.brandColor, foreground: config.foregroundColor) {
+        RectangularButton(title: String(localized: "rateApp", bundle: .module), color: config.brandColor, foreground: config.foregroundColor) {
 #if os(macOS)
 					NSWorkspace.shared.open(url)
 #else
@@ -127,7 +130,7 @@ public struct WhatsNewView<Icon: View>: View {
 						onClose?()
 					}
 				} label: {
-					Text("Maybe later")
+          Text("maybeLater", bundle: .module)
 						.bold()
 						.foregroundColor(config.brandColor)
 						.frame(height: 44)

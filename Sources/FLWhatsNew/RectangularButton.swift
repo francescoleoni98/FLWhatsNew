@@ -10,7 +10,7 @@ import SwiftUI
 /// A button that takes the entire width space available.
 struct RectangularButton: View {
 	
-	var title: LocalizedStringKey
+	var title: String
 	var color: Color = .blue
 	var foreground: Color = .white
 	var action: () -> Void
