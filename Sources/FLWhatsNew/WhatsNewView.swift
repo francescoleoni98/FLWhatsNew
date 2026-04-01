@@ -217,7 +217,11 @@ public struct WhatsNewBoldView<Icon: View>: View {
                   Image(name)
                     .resizable()
                     .scaledToFit()
+                  #if os(macOS)
+                    .frame(height: 150)
+                  #else
                     .frame(height: 170)
+                  #endif
                     .foregroundColor(.white)
                   
                 case .system(let name):
@@ -226,7 +230,11 @@ public struct WhatsNewBoldView<Icon: View>: View {
                     .foregroundColor(.white)
                 }
               }
+#if os(macOS)
+              .frame(height: 150)
+#else
               .frame(height: 170)
+#endif
               .frame(maxWidth: .infinity)
               .background(LinearGradient(colors: [config.secondaryColor, config.secondaryColor.opacity(0.8)], startPoint: .top, endPoint: .bottom), in: .rect)
               
