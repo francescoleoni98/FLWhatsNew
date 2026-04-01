@@ -300,6 +300,7 @@ public struct WhatsNewBoldView<Icon: View>: View {
 #else
     .frame(maxWidth: 500)
     .background(Color("whatsnew.back", bundle: .module))
+    .sheetBackground(Color("whatsnew.back", bundle: .module))
     .onChange(of: keyboard.keyboardShown) { shown in
       if shown {
         let scenes = UIApplication.shared.connectedScenes
@@ -349,6 +350,18 @@ struct FadingScrollView<Content: View>: View {
 			}
 		)
 	}
+}
+
+extension View {
+  
+  @ViewBuilder
+  func sheetBackground(_ color: Color) -> some View {
+    if #available(iOS 16.4, *) {
+      presentationBackground(color)
+    } else {
+      self
+    }
+  }
 }
 
 #Preview {
