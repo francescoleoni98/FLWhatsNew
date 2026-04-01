@@ -7,7 +7,7 @@
 */
 
 "whatsNew" = "नया क्या है";
-"whatsNewIn" = "%@ में नया क्या है\n";
+"whatsNewIn" = "%@ में नया क्या है";
 "rateApp" = "ऐप को रेटिंग दें";
 "maybeLater" = "शायद बाद में";
 "continue" = "जारी रखें";

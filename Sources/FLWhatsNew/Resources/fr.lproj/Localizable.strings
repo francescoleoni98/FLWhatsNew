@@ -7,7 +7,7 @@
 */
 
 "whatsNew" = "Nouveautés";
-"whatsNewIn" = "Nouveautés de la version\n%@";
+"whatsNewIn" = "Nouveautés de\n%@";
 "rateApp" = "Évaluer l'app";
 "maybeLater" = "Peut-être plus tard";
 "continue" = "Continuer";

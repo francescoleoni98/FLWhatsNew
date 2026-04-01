@@ -185,11 +185,11 @@ public struct WhatsNewBoldView<Icon: View>: View {
       VStack(alignment: .center) {
         icon()
         #if os(macOS)
-          .frame(width: 70, height: 70)
+          .frame(width: 60, height: 60)
         #else
-          .frame(width: 80, height: 80)
+          .frame(width: 70, height: 70)
         #endif
-          .padding(.bottom, 8)
+          .padding(.bottom, 4)
 
         Group {
           if let appName = config.appName {
@@ -230,7 +230,7 @@ public struct WhatsNewBoldView<Icon: View>: View {
               .frame(maxWidth: .infinity)
               .background(LinearGradient(colors: [config.secondaryColor, config.secondaryColor.opacity(0.8)], startPoint: .top, endPoint: .bottom), in: .rect)
               
-              VStack(alignment: .center, spacing: 8) {
+              VStack(alignment: .center, spacing: 4) {
                 Text(feature.title)
                   .font(.title2.bold())
                   .fixedSize(horizontal: false, vertical: true)
@@ -245,7 +245,7 @@ public struct WhatsNewBoldView<Icon: View>: View {
               .multilineTextAlignment(.center)
               .padding(24)
             }
-            .background(Color("whatsnew.white"), in: .rect(cornerRadius: 20))
+            .background(Color("whatsnew.white", bundle: .module), in: .rect(cornerRadius: 20))
             .clipShape(.rect(cornerRadius: 20))
           }
         }
@@ -291,7 +291,7 @@ public struct WhatsNewBoldView<Icon: View>: View {
     .frame(width: 400, height: 550)
 #else
     .frame(maxWidth: 500)
-    .background(Color("whatsnew.back"))
+    .background(Color("whatsnew.back", bundle: .module))
     .onChange(of: keyboard.keyboardShown) { shown in
       if shown {
         let scenes = UIApplication.shared.connectedScenes
