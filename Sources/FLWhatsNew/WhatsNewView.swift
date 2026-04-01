@@ -185,33 +185,33 @@ public struct WhatsNewBoldView<Icon: View>: View {
       Color("whatsnew.back", bundle: .module)
         .ignoresSafeArea()
       
-      VStack(alignment: .center) {
+      ScrollView(showsIndicators: false) {
         VStack(alignment: .center) {
-          icon()
+          VStack(alignment: .center) {
+            icon()
 #if os(macOS)
-            .frame(width: 60, height: 60)
+              .frame(width: 60, height: 60)
 #else
-            .frame(width: 70, height: 70)
+              .frame(width: 70, height: 70)
 #endif
-            .padding(.bottom, 4)
-          
-          Group {
-            if let appName = config.appName {
-              Text(String(
-                format: NSLocalizedString("whatsNewIn", bundle: .module, comment: ""),
-                appName
-              ))
-            } else {
-              Text("whatsNew", bundle: .module)
+              .padding(.bottom, 4)
+            
+            Group {
+              if let appName = config.appName {
+                Text(String(
+                  format: NSLocalizedString("whatsNewIn", bundle: .module, comment: ""),
+                  appName
+                ))
+              } else {
+                Text("whatsNew", bundle: .module)
+              }
             }
+            .foregroundColor(.primary)
+            .multilineTextAlignment(.center)
+            .font(.title.bold())
           }
-          .foregroundColor(.primary)
-          .multilineTextAlignment(.center)
-          .font(.title.bold())
-        }
-        .padding(.top)
-        
-        FadingScrollView {
+          .padding(.vertical)
+          
           VStack(alignment: .leading, spacing: 20) {
             ForEach(version.features) { feature in
               VStack(spacing: 0) {
@@ -222,9 +222,9 @@ public struct WhatsNewBoldView<Icon: View>: View {
                       .resizable()
                       .scaledToFit()
 #if os(macOS)
-                      .frame(height: 150)
+                      .frame(height: 140)
 #else
-                      .frame(height: 170)
+                      .frame(height: 160)
 #endif
                       .foregroundColor(.white)
                     
@@ -235,12 +235,12 @@ public struct WhatsNewBoldView<Icon: View>: View {
                   }
                 }
 #if os(macOS)
-                .frame(height: 150)
+                .frame(height: 140)
 #else
-                .frame(height: 170)
+                .frame(height: 160)
 #endif
                 .frame(maxWidth: .infinity)
-                .background(LinearGradient(colors: [config.secondaryColor, config.secondaryColor.opacity(0.8)], startPoint: .top, endPoint: .bottom), in: .rect)
+                .background(LinearGradient(colors: [config.secondaryColor.opacity(0.8), config.secondaryColor], startPoint: .top, endPoint: .bottom), in: .rect)
                 
                 VStack(alignment: .center, spacing: 4) {
                   Text(feature.title)
@@ -261,44 +261,49 @@ public struct WhatsNewBoldView<Icon: View>: View {
               .clipShape(.rect(cornerRadius: 20))
             }
           }
+          .padding(.horizontal)
         }
-        .padding(.horizontal)
-        
-        if let appReviewURL, let url = URL(string: appReviewURL) {
-          RectangularButton(title: String(localized: "rateApp", bundle: .module), color: config.brandColor, foreground: config.foregroundColor) {
-#if os(macOS)
-            NSWorkspace.shared.open(url)
-#else
-            UIApplication.shared.open(url)
-#endif
-            
-            withAnimation {
-              onClose?()
-            }
-          }
-          
-          Button {
-            withAnimation {
-              onClose?()
-            }
-          } label: {
-            Text("maybeLater", bundle: .module)
-              .bold()
-              .foregroundColor(config.brandColor)
-              .frame(height: 44)
-          }
-#if os(macOS) || os(visionOS)
-          .buttonStyle(.plain)
-#endif
-        } else {
-          RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
-            withAnimation {
-              onClose?()
-            }
-          }
-        }
+        .padding()
       }
-      .padding()
+      .safeAreaInset(edge: .bottom) {
+        VStack {
+          if let appReviewURL, let url = URL(string: appReviewURL) {
+            RectangularButton(title: String(localized: "rateApp", bundle: .module), color: config.brandColor, foreground: config.foregroundColor) {
+#if os(macOS)
+              NSWorkspace.shared.open(url)
+#else
+              UIApplication.shared.open(url)
+#endif
+              
+              withAnimation {
+                onClose?()
+              }
+            }
+            
+            Button {
+              withAnimation {
+                onClose?()
+              }
+            } label: {
+              Text("maybeLater", bundle: .module)
+                .bold()
+                .foregroundColor(config.brandColor)
+                .frame(height: 44)
+            }
+#if os(macOS) || os(visionOS)
+            .buttonStyle(.plain)
+#endif
+          } else {
+            RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
+              withAnimation {
+                onClose?()
+              }
+            }
+          }
+        }
+        .padding()
+        .background(Color("whatsnew.back", bundle: .module))
+      }
     }
 #if os(macOS)
     .frame(width: 400, height: 550)
