@@ -6,8 +6,8 @@
 
 */
 
-"rateApp" = "评价应用";
-"whatsNewIn" = "%@ 中的最新内容";
 "whatsNew" = "最新内容";
+"whatsNewIn" = "%@ 的新增功能\n";
+"rateApp" = "评价应用";
+"maybeLater" = "稍后";
 "continue" = "继续";
-"maybeLater" = "稍后提醒";

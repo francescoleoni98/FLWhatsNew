@@ -162,6 +162,147 @@ public struct WhatsNewView<Icon: View>: View {
 	}
 }
 
+public struct WhatsNewBoldView<Icon: View>: View {
+
+  @ObservedObject var keyboard = KeyboardObserver()
+
+  var version: WhatsNew
+  var appReviewURL: String?
+  @ViewBuilder var icon: () -> Icon
+  var onClose: (() -> Void)?
+
+  private let config = WhatsNewStore.Config.shared
+
+  public init(version: WhatsNew, appReviewURL: String? = nil, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) {
+    self.version = version
+    self.appReviewURL = appReviewURL
+    self.icon = icon
+    self.onClose = onClose
+  }
+
+  public var body: some View {
+    VStack(alignment: .center) {
+      VStack(alignment: .center) {
+        icon()
+        #if os(macOS)
+          .frame(width: 70, height: 70)
+        #else
+          .frame(width: 80, height: 80)
+        #endif
+          .padding(.bottom, 8)
+
+        Group {
+          if let appName = config.appName {
+            Text(String(
+              format: NSLocalizedString("whatsNewIn", bundle: .module, comment: ""),
+              appName
+          ))
+          } else {
+            Text("whatsNew", bundle: .module)
+          }
+        }
+        .foregroundColor(.primary)
+        .multilineTextAlignment(.center)
+        .font(.title.bold())
+      }
+      .padding(.top)
+
+      FadingScrollView {
+        VStack(alignment: .leading, spacing: 20) {
+          ForEach(version.features) { feature in
+            VStack(spacing: 0) {
+              VStack {
+                switch feature.image {
+                case .named(let name):
+                  Image(name)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 170)
+                    .foregroundColor(.white)
+                  
+                case .system(let name):
+                  Image(systemName: name)
+                    .font(.system(size: 60))
+                    .foregroundColor(.white)
+                }
+              }
+              .frame(height: 170)
+              .frame(maxWidth: .infinity)
+              .background(LinearGradient(colors: [config.secondaryColor, config.secondaryColor.opacity(0.8)], startPoint: .top, endPoint: .bottom), in: .rect)
+              
+              VStack(alignment: .center, spacing: 8) {
+                Text(feature.title)
+                  .font(.title2.bold())
+                  .fixedSize(horizontal: false, vertical: true)
+                  .frame(maxWidth: .infinity, alignment: .center)
+
+                Text(feature.body)
+                  .font(.body)
+                  .foregroundStyle(.secondary)
+                  .fixedSize(horizontal: false, vertical: true)
+                  .frame(maxWidth: .infinity, alignment: .center)
+              }
+              .multilineTextAlignment(.center)
+              .padding(24)
+            }
+            .background(Color("whatsnew.white"), in: .rect(cornerRadius: 20))
+            .clipShape(.rect(cornerRadius: 20))
+          }
+        }
+      }
+      .padding(.horizontal)
+
+      if let appReviewURL, let url = URL(string: appReviewURL) {
+        RectangularButton(title: String(localized: "rateApp", bundle: .module), color: config.brandColor, foreground: config.foregroundColor) {
+#if os(macOS)
+          NSWorkspace.shared.open(url)
+#else
+          UIApplication.shared.open(url)
+#endif
+
+          withAnimation {
+            onClose?()
+          }
+        }
+
+        Button {
+          withAnimation {
+            onClose?()
+          }
+        } label: {
+          Text("maybeLater", bundle: .module)
+            .bold()
+            .foregroundColor(config.brandColor)
+            .frame(height: 44)
+        }
+#if os(macOS) || os(visionOS)
+        .buttonStyle(.plain)
+#endif
+      } else {
+        RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
+          withAnimation {
+            onClose?()
+          }
+        }
+      }
+    }
+    .padding()
+#if os(macOS)
+    .frame(width: 400, height: 550)
+#else
+    .frame(maxWidth: 500)
+    .background(Color("whatsnew.back"))
+    .onChange(of: keyboard.keyboardShown) { shown in
+      if shown {
+        let scenes = UIApplication.shared.connectedScenes
+        let windowScene = scenes.first as? UIWindowScene
+        windowScene?.windows.first?.endEditing(true)
+      }
+    }
+#endif
+  }
+}
+
 struct FadingScrollView<Content: View>: View {
 
 	var content: Content
@@ -203,7 +344,7 @@ struct FadingScrollView<Content: View>: View {
 }
 
 #Preview {
-	WhatsNewView(version: .init(version: "1.0.0", features: [Feature(id: "1", title: "This is the title This is the body This is the body This is the body ", body: "This is the body This is the body This is the body This is the body.", image: .system("plus")), Feature(id: "3", title: "This is the title", body: "This is the body.", image: .system("plus")), Feature(id: "2", title: "This is the title", body: "This is the body.", image: .system("plus")), Feature(id: "4", title: "This is the title", body: "This is the body.", image: .system("plus"))]), appReviewURL: "nil") {
+	WhatsNewBoldView(version: .init(version: "1.0.0", features: [Feature(id: "1", title: "Checklists", body: "Now you can add checklists to your notes.", image: .system("checklist")), Feature(id: "3", title: "This is the title", body: "This is the body.", image: .system("plus")), Feature(id: "2", title: "This is the title", body: "This is the body.", image: .system("plus")), Feature(id: "4", title: "This is the title", body: "This is the body.", image: .system("plus"))]), appReviewURL: "nil") {
 		Image(systemName: "plus")
 			.foregroundColor(.white)
 			.frame(maxWidth: .infinity, maxHeight: .infinity)

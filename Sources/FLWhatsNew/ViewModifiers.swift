@@ -7,11 +7,18 @@
 
 import SwiftUI
 
+public enum WhatsNewStyle {
+  
+  case standard
+  case bold
+}
+
 struct ShowModifier<Icon: View>: ViewModifier {
 
 	@State private var newVersion: WhatsNew?
 
 	var store: WhatsNewStore
+  var style: WhatsNewStyle = .standard
 	var showSheet: Bool = true
 	var appReviewURL: String? = nil
 	@ViewBuilder var icon: () -> Icon
@@ -33,10 +40,19 @@ struct ShowModifier<Icon: View>: ViewModifier {
 				}
 			}
 			.present(item: $newVersion) { version in
-				WhatsNewView(version: version, appReviewURL: appReviewURL, icon: icon, onClose: {
-					newVersion = nil
-					onClose?()
-				})
+        switch style {
+        case .standard:
+          WhatsNewView(version: version, appReviewURL: appReviewURL, icon: icon, onClose: {
+            newVersion = nil
+            onClose?()
+          })
+          
+        case .bold:
+          WhatsNewBoldView(version: version, appReviewURL: appReviewURL, icon: icon, onClose: {
+            newVersion = nil
+            onClose?()
+          })
+        }
 			}
 	}
 }
@@ -44,8 +60,8 @@ struct ShowModifier<Icon: View>: ViewModifier {
 public extension View {
 
 	@ViewBuilder
-	func showWhatsNew<Icon: View>(store: WhatsNewStore, showSheet: Bool = true, appReviewURL: String? = nil, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) -> some View {
-		modifier(ShowModifier(store: store, showSheet: showSheet, appReviewURL: appReviewURL, icon: icon, onClose: onClose))
+	func showWhatsNew<Icon: View>(store: WhatsNewStore, style: WhatsNewStyle = .standard, showSheet: Bool = true, appReviewURL: String? = nil, @ViewBuilder icon: @escaping () -> Icon, onClose: (() -> Void)? = nil) -> some View {
+    modifier(ShowModifier(store: store, style: style, showSheet: showSheet, appReviewURL: appReviewURL, icon: icon, onClose: onClose))
 	}
 
 #if os(iOS)

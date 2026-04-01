@@ -53,13 +53,15 @@ public extension WhatsNewStore {
 
 		public var appName: String?
 		public var brandColor: Color
+    public var secondaryColor: Color
 		public var foregroundColor: Color
 		public var actionTitle: String
 
-    public init(appName: String? = nil, brandColor: Color = .blue, foregroundColor: Color = .white, actionTitle: String? = nil) {
+    public init(appName: String? = nil, brandColor: Color = .blue, secondaryColor: Color = .blue, foregroundColor: Color = .white, actionTitle: String? = nil) {
 			self.appName = appName
 			self.brandColor = brandColor
 			self.foregroundColor = foregroundColor
+      self.secondaryColor = secondaryColor
 			self.actionTitle = actionTitle ?? String(localized: "continue", bundle: .module)
 		}
 	}
