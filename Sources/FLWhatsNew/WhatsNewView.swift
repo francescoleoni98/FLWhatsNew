@@ -181,126 +181,129 @@ public struct WhatsNewBoldView<Icon: View>: View {
   }
 
   public var body: some View {
-    VStack(alignment: .center) {
+    ZStack {
+      Color("whatsnew.back", bundle: .module)
+        .ignoresSafeArea()
+      
       VStack(alignment: .center) {
-        icon()
-        #if os(macOS)
-          .frame(width: 60, height: 60)
-        #else
-          .frame(width: 70, height: 70)
-        #endif
-          .padding(.bottom, 4)
-
-        Group {
-          if let appName = config.appName {
-            Text(String(
-              format: NSLocalizedString("whatsNewIn", bundle: .module, comment: ""),
-              appName
-          ))
-          } else {
-            Text("whatsNew", bundle: .module)
-          }
-        }
-        .foregroundColor(.primary)
-        .multilineTextAlignment(.center)
-        .font(.title.bold())
-      }
-      .padding(.top)
-
-      FadingScrollView {
-        VStack(alignment: .leading, spacing: 20) {
-          ForEach(version.features) { feature in
-            VStack(spacing: 0) {
-              VStack {
-                switch feature.image {
-                case .named(let name):
-                  Image(name)
-                    .resizable()
-                    .scaledToFit()
-                  #if os(macOS)
-                    .frame(height: 150)
-                  #else
-                    .frame(height: 170)
-                  #endif
-                    .foregroundColor(.white)
-                  
-                case .system(let name):
-                  Image(systemName: name)
-                    .font(.system(size: 60))
-                    .foregroundColor(.white)
-                }
-              }
+        VStack(alignment: .center) {
+          icon()
 #if os(macOS)
-              .frame(height: 150)
+            .frame(width: 60, height: 60)
 #else
-              .frame(height: 170)
+            .frame(width: 70, height: 70)
 #endif
-              .frame(maxWidth: .infinity)
-              .background(LinearGradient(colors: [config.secondaryColor, config.secondaryColor.opacity(0.8)], startPoint: .top, endPoint: .bottom), in: .rect)
-              
-              VStack(alignment: .center, spacing: 4) {
-                Text(feature.title)
-                  .font(.title2.bold())
-                  .fixedSize(horizontal: false, vertical: true)
-                  .frame(maxWidth: .infinity, alignment: .center)
-
-                Text(feature.body)
-                  .font(.body)
-                  .foregroundStyle(.secondary)
-                  .fixedSize(horizontal: false, vertical: true)
-                  .frame(maxWidth: .infinity, alignment: .center)
-              }
-              .multilineTextAlignment(.center)
-              .padding(24)
+            .padding(.bottom, 4)
+          
+          Group {
+            if let appName = config.appName {
+              Text(String(
+                format: NSLocalizedString("whatsNewIn", bundle: .module, comment: ""),
+                appName
+              ))
+            } else {
+              Text("whatsNew", bundle: .module)
             }
-            .background(Color("whatsnew.white", bundle: .module), in: .rect(cornerRadius: 20))
-            .clipShape(.rect(cornerRadius: 20))
           }
+          .foregroundColor(.primary)
+          .multilineTextAlignment(.center)
+          .font(.title.bold())
         }
-      }
-      .padding(.horizontal)
-
-      if let appReviewURL, let url = URL(string: appReviewURL) {
-        RectangularButton(title: String(localized: "rateApp", bundle: .module), color: config.brandColor, foreground: config.foregroundColor) {
+        .padding(.top)
+        
+        FadingScrollView {
+          VStack(alignment: .leading, spacing: 20) {
+            ForEach(version.features) { feature in
+              VStack(spacing: 0) {
+                VStack {
+                  switch feature.image {
+                  case .named(let name):
+                    Image(name)
+                      .resizable()
+                      .scaledToFit()
 #if os(macOS)
-          NSWorkspace.shared.open(url)
+                      .frame(height: 150)
 #else
-          UIApplication.shared.open(url)
+                      .frame(height: 170)
 #endif
-
-          withAnimation {
-            onClose?()
+                      .foregroundColor(.white)
+                    
+                  case .system(let name):
+                    Image(systemName: name)
+                      .font(.system(size: 60))
+                      .foregroundColor(.white)
+                  }
+                }
+#if os(macOS)
+                .frame(height: 150)
+#else
+                .frame(height: 170)
+#endif
+                .frame(maxWidth: .infinity)
+                .background(LinearGradient(colors: [config.secondaryColor, config.secondaryColor.opacity(0.8)], startPoint: .top, endPoint: .bottom), in: .rect)
+                
+                VStack(alignment: .center, spacing: 4) {
+                  Text(feature.title)
+                    .font(.title2.bold())
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                  
+                  Text(feature.body)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .multilineTextAlignment(.center)
+                .padding(24)
+              }
+              .background(Color("whatsnew.white", bundle: .module), in: .rect(cornerRadius: 20))
+              .clipShape(.rect(cornerRadius: 20))
+            }
           }
         }
-
-        Button {
-          withAnimation {
-            onClose?()
+        .padding(.horizontal)
+        
+        if let appReviewURL, let url = URL(string: appReviewURL) {
+          RectangularButton(title: String(localized: "rateApp", bundle: .module), color: config.brandColor, foreground: config.foregroundColor) {
+#if os(macOS)
+            NSWorkspace.shared.open(url)
+#else
+            UIApplication.shared.open(url)
+#endif
+            
+            withAnimation {
+              onClose?()
+            }
           }
-        } label: {
-          Text("maybeLater", bundle: .module)
-            .bold()
-            .foregroundColor(config.brandColor)
-            .frame(height: 44)
-        }
+          
+          Button {
+            withAnimation {
+              onClose?()
+            }
+          } label: {
+            Text("maybeLater", bundle: .module)
+              .bold()
+              .foregroundColor(config.brandColor)
+              .frame(height: 44)
+          }
 #if os(macOS) || os(visionOS)
-        .buttonStyle(.plain)
+          .buttonStyle(.plain)
 #endif
-      } else {
-        RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
-          withAnimation {
-            onClose?()
+        } else {
+          RectangularButton(title: config.actionTitle, color: config.brandColor, foreground: config.foregroundColor) {
+            withAnimation {
+              onClose?()
+            }
           }
         }
       }
+      .padding()
     }
-    .padding()
 #if os(macOS)
     .frame(width: 400, height: 550)
 #else
     .frame(maxWidth: 500)
-    .background(Color("whatsnew.back", bundle: .module))
-    .sheetBackground(Color("whatsnew.back", bundle: .module))
     .onChange(of: keyboard.keyboardShown) { shown in
       if shown {
         let scenes = UIApplication.shared.connectedScenes
