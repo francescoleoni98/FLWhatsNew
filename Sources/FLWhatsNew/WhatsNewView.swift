@@ -304,6 +304,7 @@ public struct WhatsNewBoldView<Icon: View>: View {
     .frame(width: 400, height: 550)
 #else
     .frame(maxWidth: 500)
+    .sheetBackground(Color("whatsnew.back", bundle: .module))
     .onChange(of: keyboard.keyboardShown) { shown in
       if shown {
         let scenes = UIApplication.shared.connectedScenes
