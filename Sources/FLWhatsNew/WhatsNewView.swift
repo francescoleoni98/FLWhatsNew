@@ -243,6 +243,15 @@ public struct WhatsNewBoldView<Icon: View>: View {
                 .background(LinearGradient(colors: [config.secondaryColor.opacity(0.8), config.secondaryColor], startPoint: .top, endPoint: .bottom), in: .rect)
                 
                 VStack(alignment: .center, spacing: 4) {
+                  if let badge = feature.badge {
+                    Text(badge)
+                      .font(.footnote.bold())
+                      .padding(4)
+                      .padding(.horizontal, 4)
+                      .foregroundStyle(config.foregroundColor)
+                      .background(config.brandColor, in: .rect(cornerRadius: 4))
+                  }
+                  
                   Text(feature.title)
                     .font(.title2.bold())
                     .fixedSize(horizontal: false, vertical: true)
